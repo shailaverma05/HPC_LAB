@@ -1,24 +1,19 @@
-#include <mpi.h>
 #include <stdio.h>
-
+#include <stdlib.h>
+#include <mpi.h>
 int main(int argc, char **argv)
 {
-    int rank, size, mangoes_picked, total_mangoes;
-
+    int rank, numproc;
+    int sum = 0;
+    int total_sum = 0;
     MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &numproc);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    mangoes_picked = rank + 1; // Example: Robots pick mangoes proportional to their rank
-    printf("Robot %d picked %d mangoes\n", rank, mangoes_picked);
-
-    MPI_Reduce(&mangoes_picked, &total_mangoes, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-
+    srand(rank);
+    sum = rand() % 100;
+    printf("Robot %d picked %d mangoes.\n", rank, sum);
+    MPI_Reduce(&sum, &total_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
     if (rank == 0)
-    {
-        printf("Total mangoes picked by %d robots: %d\n", size, total_mangoes);
-    }
-
+        printf("Total Mangoes picked by %d Robots = %d\n", numproc, total_sum);
     MPI_Finalize();
-    return 0;
 }
